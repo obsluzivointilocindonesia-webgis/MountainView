@@ -462,40 +462,40 @@ const holeData = {
         heading: 220, pitch: -45, roll:0
     },
 
-    "13": {//-6.8693127,107.6262355 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6262355, -6.8693127, 980),
+    "13": {//-6.8692817,107.6504553 
+        center: Cesium.Cartesian3.fromDegrees(107.6504553, -6.8692817, 1100),
         contourAssetId: 4446989,
-        heading: 185, pitch: -45, roll:0
+        heading: 150, pitch: -60, roll:0
     },
 
-    "14": {//-6.8729829,107.6259116 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6259116, -6.8729829, 940),
+    "14": {//-6.8691068,107.6492659
+        center: Cesium.Cartesian3.fromDegrees(107.6492659,-6.8691068, 1020),
         contourAssetId: 4446991,
-        heading: 150, pitch: -45, roll:0
+        heading: 260, pitch: -50, roll:0
     },
 
-    "15": {//-6.8742549,107.6269605 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6269605, -6.8742549, 930),
+    "15": {//-6.8669446,107.6494201
+        center: Cesium.Cartesian3.fromDegrees(107.6494201,-6.8669446, 1100),
         contourAssetId: 4446990,
-        heading: 160, pitch: -78, roll:0
+        heading: 45, pitch: -45, roll:0
     },
 
-    "16": {//-6.8734561,107.6265773 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6265773, -6.8734561, 950),
+    "16": {//-6.8650002,107.6505345
+        center: Cesium.Cartesian3.fromDegrees(107.6505345,-6.8650002, 1030),
         contourAssetId: 4446999,
-        heading: 10, pitch: -60, roll:0
+        heading: 300, pitch: -30, roll:0
     },
 
-    "17": {//-6.8712539,107.6268688 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6268688, -6.8712539, 950),
+    "17": {//-6.8653907,107.6461665
+        center: Cesium.Cartesian3.fromDegrees(107.6461665,-6.8653907, 1020),
         contourAssetId: 4447001,
-        heading: 10, pitch: -43, roll:0
+        heading: 220, pitch: -45, roll:0
     },
 
-    "18": {//-6.8686092,107.6265665 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6265665, -6.8686092, 1000),
+    "18": {//-6.8641993,107.6468163
+        center: Cesium.Cartesian3.fromDegrees(107.6468163,-6.8641993, 1090),
         contourAssetId: 4447004,
-        heading: 348, pitch: -43, roll:0
+        heading: 60, pitch: -50, roll:0
     }
 };
 
@@ -1073,7 +1073,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', function() {
 
     const opt = {
         margin:       0.5,
-        filename:     `TerraGOLF-DagoHeritage-${Date.now()}.pdf`,
+        filename:     `TerraGOLF-MountainView-${Date.now()}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, logging: false, useCORS: true },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -1474,7 +1474,7 @@ async function startXenditPayment(userProfile) {
     const userEmail = user?.email;
 
     // 2. AMBIL ANON KEY ANDA (Copy dari Dashboard Supabase)
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGpyZmhicmVzd2FkemxleHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjA4NjIsImV4cCI6MjA4NTY5Njg2Mn0.mS7QjBoWBS-xYZcAE--SaZHioJ_RqA57l_Bs5p6ppag"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeXdzbWtuZG5hZmtiY2pnaHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODkxMjIsImV4cCI6MjA4NjU2NTEyMn0.dqNRhm-VtIVnPsdjRS19Afc90gyO6SmLw79KVLVXwIE"; 
 
     if (!userEmail) {
         alert("Email tidak ditemukan. Silakan login kembali.");

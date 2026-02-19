@@ -2,8 +2,8 @@
 //tambahan untuk supabase
 let currentUser = null;
 let userLat = 0, userLon = 0;
-const supabaseUrl = 'https://zrywsmkndnafkbcjghru.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeXdzbWtuZG5hZmtiY2pnaHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODkxMjIsImV4cCI6MjA4NjU2NTEyMn0.dqNRhm-VtIVnPsdjRS19Afc90gyO6SmLw79KVLVXwIE';
+const supabaseUrl = 'https://jltjrfhbreswadzlexzg.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGpyZmhicmVzd2FkemxleHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjA4NjIsImV4cCI6MjA4NTY5Njg2Mn0.mS7QjBoWBS-xYZcAE--SaZHioJ_RqA57l_Bs5p6ppag';
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
 Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NmUzZDVlMi1lM2Q3LTQzZDUtODg2Ni0yZTEzZGViODFjYTAiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzA5Nzg4ODV9.bGZbsj_VhF4AviF2Zd6Ohin27yoQ9tthvyWLbUj5fjM"
@@ -1500,12 +1500,17 @@ checkAccess();
 
 // akses Xendit Payment
 async function startXenditPayment(userProfile) {
-    // 1. Ambil email dari auth
+    // 1. Deteksi Lapangan secara otomatis berdasarkan Domain
+    let merchantId = 'TGR'; // Default
+    if (window.location.hostname.includes('mvg')) {
+        merchantId = 'MVG';
+    }
+
+    // 2. Ambil email dari auth
     const { data: { user } } = await sb.auth.getUser();
     const userEmail = user?.email;
 
-    // 2. AMBIL ANON KEY ANDA (Copy dari Dashboard Supabase)
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyeXdzbWtuZG5hZmtiY2pnaHJ1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDk4OTEyMiwiZXhwIjoyMDg2NTY1MTIyfQ.6RW3N2hu_6yKGrA1C6aKHEn-Asm-6iocoODdHdM7_Aw"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // Pakai Key Anda
 
     if (!userEmail) {
         alert("Email tidak ditemukan. Silakan login kembali.");
@@ -1513,16 +1518,17 @@ async function startXenditPayment(userProfile) {
     }
 
     try {
-        const response = await fetch('https://zrywsmkndnafkbcjghru.supabase.co/functions/v1/xendit-payment', {
+        const response = await fetch('https://jltjrfhbreswadzlexzg.supabase.co/functions/v1/xendit-payment', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}` // Tambahkan baris ini
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
                 userId: userProfile.id,
                 email: userEmail,
-                fullName: userProfile.full_name || "Golfer"
+                fullName: userProfile.full_name || "Golfer",
+                merchantId: merchantId // <--- SEKARANG INI TERKIRIM KE SUPABASE
             })
         });
 
@@ -1540,6 +1546,7 @@ async function startXenditPayment(userProfile) {
         alert("Gagal menghubungi server: " + err.message);
     }
 }
+
 
 
 // akses any device

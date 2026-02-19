@@ -77,6 +77,43 @@ body, html, #cesiumContainer {
     z-index: 1009;
 }
 
+/* Container Utama Info Trial */
+#trial-info-text {
+    display: none; /* Akan diubah jadi 'block' via JS */
+    padding: 8px 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1); /* Glassmorphism effect */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animasi saat muncul */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gaya khusus saat sisa hari kritis (diatur lewat JS dengan mengganti class atau style) */
+.trial-urgent {
+    background: rgba(255, 68, 68, 0.2) !important;
+    border: 1px solid rgba(255, 68, 68, 0.5) !important;
+    color: #ff9999 !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}
+
 @media screen and (max-width: 768px) {
     /* Samakan semua class tombol agar lebarnya konsisten */
     .btn, .menu-button {

@@ -6,7 +6,7 @@ const supabaseUrl = 'https://jltjrfhbreswadzlexzg.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGpyZmhicmVzd2FkemxleHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjA4NjIsImV4cCI6MjA4NTY5Njg2Mn0.mS7QjBoWBS-xYZcAE--SaZHioJ_RqA57l_Bs5p6ppag';
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNGFhYzZhOS0wMzE3LTQzNzYtOGVjYi05ZTA0YzhiMDk5YmQiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzEyODU4MDN9.d2DW9E0jobCU9HtID0mNryFCLknqkA6F9Wp_eLFxViE"
+Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NmUzZDVlMi1lM2Q3LTQzZDUtODg2Ni0yZTEzZGViODFjYTAiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzA5Nzg4ODV9.bGZbsj_VhF4AviF2Zd6Ohin27yoQ9tthvyWLbUj5fjM"
 const viewer = new Cesium.Viewer('cesiumContainer', {
     terrain: Cesium.Terrain.fromWorldTerrain(),
 });
@@ -41,10 +41,10 @@ async function init() {
         viewer.scene.primitives.add(tileset);
         tileset.classificationType = Cesium.ClassificationType.BOTH;
         viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(107.6258056, -6.8698692729, 990),
-            orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
+        destination: Cesium.Cartesian3.fromDegrees(107.6457061, -6.8659281, 1050),
+            orientation: { heading: Cesium.Math.toRadians(45), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
             duration: 2
-        });    
+        }); 
     } catch (e) { console.error(e); }
 }
 init();
@@ -501,7 +501,6 @@ const holeData = {
 };
 
 
-
 document.getElementById('holeSelect').addEventListener('change', async (e) => {
     const id = e.target.value;
     if (!id) return;
@@ -660,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //-----------------------------------------------
 document.getElementById('saveTrackBtn').addEventListener('click', async () => {
     const holeId = document.getElementById('holeSelect').value;
+    const currentMerchantId = window.location.hostname.includes('mvg') ? 'MVG' : 'TGR';
     if (!holeId) return alert("Select Hole # First");
     if (activePoints.length < 2) return alert("At least 2 points to save track");
 
@@ -730,19 +730,21 @@ document.getElementById('saveTrackBtn').addEventListener('click', async () => {
     localStorage.setItem('golf_tracks', JSON.stringify(allTracks));
 
     // 5. SIMPAN KE SUPABASE (MODIFIKASI SYNC)
-    if (currentUser) {
-        try {
-            const { error } = await sb
-                .from('tracks')
-                .insert([{
-                    user_id: currentUser.id,
-                    round_id: String(sessionRoundId), // INI KUNCI MULTIPLAYER
-                    hole_number: parseInt(newEntry.hole),
-                    par: newEntry.par,
-                    strokes: newEntry.strokes,
-                    score_term: newEntry.scoreTerm,
-                    points: newEntry.points 
-                }]);
+    // 5. SIMPAN KE SUPABASE (DENGAN MERCHANT_ID)
+if (currentUser) {
+    try {
+        const { error } = await sb
+            .from('tracks')
+            .insert([{
+                user_id: currentUser.id,
+                merchant_id: currentMerchantId, // <--- TAMBAHKAN INI
+                round_id: String(sessionRoundId),
+                hole_number: parseInt(newEntry.hole),
+                par: newEntry.par,
+                strokes: newEntry.strokes,
+                score_term: newEntry.scoreTerm,
+                points: newEntry.points 
+            }]);
 
             if (error) throw error;
             console.log("Synchronized to Supabase with Round ID:", sessionRoundId);
@@ -1304,16 +1306,19 @@ document.getElementById('focusGpsBtn').addEventListener('click', () => {
 async function saveScoreToCloud(hole, par, strokes, term) {
     if (!currentUser) return;
 
+    // Tambahkan deteksi merchant
+    const currentMerchantId = window.location.hostname.includes('mvg') ? 'MVG' : 'TGR';
+
     const { error } = await sb
         .from('tracks')
         .insert([{
             user_id: currentUser.id,
+            merchant_id: currentMerchantId, // <--- TAMBAHKAN INI
             round_id: localStorage.getItem('current_round_id'),
             hole_number: parseInt(hole),
             par: par,
             strokes: strokes,
             score_term: term,
-            // Masukkan koordinat GPS jika ada
             points: { lat: userLat, lon: userLon } 
         }]);
 
@@ -1323,7 +1328,7 @@ async function saveScoreToCloud(hole, par, strokes, term) {
 
 // supabase access
 async function checkAccess() {
-    console.log("Memulai pengecekan akses per lapangan...");
+    console.log("Memulai pengecekan akses...");
     const { data: { session } } = await sb.auth.getSession();
     const overlay = document.getElementById('auth-overlay');
 
@@ -1332,47 +1337,58 @@ async function checkAccess() {
         return;
     }
 
-    // 1. DETEKSI MERCHANT ID
     const currentMerchantId = window.location.hostname.includes('mvg') ? 'MVG' : 'TGR';
 
-    // 2. AMBIL DATA PROFIL & SUBSCRIPTION
+    // 1. Ambil Profile & Subscription
     const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-    
     const { data: subscription } = await sb.from('subscriptions')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('merchant_id', currentMerchantId) // Mengunci pengecekan hanya untuk lapangan ini
+        .eq('merchant_id', currentMerchantId)
         .eq('status', 'ACTIVE')
         .maybeSingle();
 
-    if (!profile) {
-        // ... (Kode insert profil baru tetap di sini) ...
-        return;
-    }
+    if (!profile) return; // Tunggu proses insert profile selesai
 
     currentUser = profile;
     const today = new Date();
-    const joinDate = new Date(profile.created_at);
-    const diffDays = Math.ceil((today - joinDate) / (1000 * 60 * 60 * 24));
     
-    // 3. LOGIKA PENENTU AKSES
-    const isSubActive = subscription && new Date(subscription.valid_until) > today;
+    // 2. LOGIKA TRIAL (Gunakan created_at atau join_date dari DB)
+    const dateFromDb = profile.created_at || profile.join_date;
+    const joinDate = new Date(dateFromDb);
+    
+    // Hitung selisih hari secara presisi
+    const diffInMs = today - joinDate;
+    const diffDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    
+    console.log(`User join: ${joinDate.toLocaleDateString()}. Selisih: ${diffDays} hari.`);
+
+    // Kondisi Trial: Valid jika join_date <= 7 hari yang lalu
     const isTrialValid = diffDays <= 7;
 
-    if (!isSubActive && !isTrialValid) {
-        console.log(`Akses terkunci untuk ${currentMerchantId}.`);
-        // Pastikan nama fungsi di bawah ini sama dengan nama fungsi di bawah (lockUI)
-        lockUI(session.user.email, currentMerchantId); 
-    } else {
-        console.log("Akses diberikan!");
+    // 3. LOGIKA BERBAYAR
+    const isSubActive = subscription && 
+                        subscription.is_paid === true && 
+                        new Date(subscription.valid_until) > today;
+
+    // 4. PENENTUAN AKSES (Buka jika Trial VALID -ATAU- Sub AKTIF)
+    if (isTrialValid || isSubActive) {
+        console.log("Akses Diberikan!");
         overlay.style.display = 'none';
+        
+        // Jalankan fungsi aplikasi
         if (typeof loadTracksFromCloud === "function") loadTracksFromCloud();
         
+        // Update Badge UI
         const badge = document.getElementById('user-status-badge');
         if (badge) {
             badge.textContent = isSubActive ? "PRO" : "TRIAL";
             badge.style.backgroundColor = isSubActive ? "#00ff88" : "#555";
         }
+    } else {
+        // HANYA kunci jika keduanya FALSE (Trial habis DAN tidak bayar)
+        console.log("Akses Ditolak: Trial habis & belum berlangganan.");
+        lockUI(session.user.email, currentMerchantId);
     }
 }
 
@@ -1384,14 +1400,13 @@ function lockUI(email, merchantId) {
     const title = document.getElementById('auth-title');
     const subtitle = document.getElementById('auth-subtitle');
     if (title) title.textContent = "Akses Terkunci";
-    if (subtitle) subtitle.innerHTML = `Masa trial habis. Silakan aktivasi khusus untuk lapangan <b>${merchantId}</b>`;
+    if (subtitle) subtitle.innerHTML = `Masa trial habis. Silakan aktivasi khusus untuk lapangan <b>${merchantId}</b> untuk melanjutkan.`;
     
-    // Sembunyikan input login agar fokus ke tombol bayar
     if (document.getElementById('auth-email')) document.getElementById('auth-email').style.display = 'none';
     if (document.getElementById('auth-pass')) document.getElementById('auth-pass').style.display = 'none';
     
     const btnContainer = document.getElementById('auth-primary-btn').parentElement;
-    btnContainer.innerHTML = ''; // Reset container
+    btnContainer.innerHTML = ''; 
 
     const btnXendit = document.createElement('button');
     btnXendit.className = "auth-btn";
@@ -1399,6 +1414,8 @@ function lockUI(email, merchantId) {
     btnXendit.style.color = "#000";
     btnXendit.style.fontWeight = "bold";
     btnXendit.textContent = `Activate ${merchantId} (Instant)`;
+    
+    // Saat diklik, startXenditPayment akan mengirimkan merchantId yang benar
     btnXendit.onclick = () => startXenditPayment(currentUser);
     btnContainer.appendChild(btnXendit);
 }
@@ -1455,33 +1472,24 @@ async function startXenditPayment(userProfile) {
 
 // akses any device
 async function loadTracksFromCloud() {
-    if (!currentUser) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
 
-    const { data, error } = await sb
+    const currentMerchantId = window.location.hostname.includes('mvg') ? 'MVG' : 'TGR';
+
+    const { data: tracks, error } = await sb
         .from('tracks')
         .select('*')
-        .eq('user_id', currentUser.id)
-        .eq('round_id', localStorage.getItem('current_round_id'));
+        .eq('user_id', session.user.id)
+        .eq('merchant_id', currentMerchantId) // Filter agar TGR tidak muncul di MVG
+        .order('created_at', { ascending: false });
 
     if (error) {
-        console.error("Gagal ambil data cloud:", error.message);
-    } else if (data) {
-        console.log("Data cloud sinkron:", data.length, "entry ditemukan.");
-        
-        // Simpan data cloud ke LocalStorage agar UI updateSummaryUI() bisa membacanya
-        // Kita petakan agar formatnya sama dengan yang diharapkan fungsi UI kita
-        const formattedData = data.map(d => ({
-            id: d.id,
-            roundId: d.round_id,
-            hole: d.hole_number,
-            par: d.par,
-            strokes: d.strokes,
-            scoreTerm: d.score_term,
-            points: d.points
-        }));
-
-        localStorage.setItem('golf_tracks', JSON.stringify(formattedData));
-        updateSummaryUI(); // Update tabel scorecard kamu
+        console.error("Gagal memuat histori:", error.message);
+    } else {
+        console.log(`Berhasil memuat ${tracks.length} track untuk ${currentMerchantId}`);
+        // Panggil fungsi render UI Anda di sini
+        if (typeof renderHistoryUI === "function") renderHistoryUI(tracks);
     }
 }
 

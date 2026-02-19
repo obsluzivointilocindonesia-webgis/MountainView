@@ -6,7 +6,7 @@ const supabaseUrl = 'https://jltjrfhbreswadzlexzg.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGpyZmhicmVzd2FkemxleHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjA4NjIsImV4cCI6MjA4NTY5Njg2Mn0.mS7QjBoWBS-xYZcAE--SaZHioJ_RqA57l_Bs5p6ppag';
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxYjJiNmQzZC1hNTc0LTRhM2MtYjI2Yy1jZmQ2ZTZmNzY0YTMiLCJpZCI6Mzg0MjAyLCJpYXQiOjE3NzAzOTYwNzF9.YfLtke7hqAh66vLe_iaVxqCt8iB9PFTUk5GXSgVpq6c"
+Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NmUzZDVlMi1lM2Q3LTQzZDUtODg2Ni0yZTEzZGViODFjYTAiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzA5Nzg4ODV9.bGZbsj_VhF4AviF2Zd6Ohin27yoQ9tthvyWLbUj5fjM"
 const viewer = new Cesium.Viewer('cesiumContainer', {
     terrain: Cesium.Terrain.fromWorldTerrain(),
 });
@@ -37,20 +37,20 @@ if (!currentRoundId) {
 // 2. LOAD ASSET TILESET
 async function init() {
     try {
-        const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(4406223);
+        const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(4453573);
         viewer.scene.primitives.add(tileset);
         tileset.classificationType = Cesium.ClassificationType.BOTH;
         viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(107.6258056, -6.8698692729, 990),
-            orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
+        destination: Cesium.Cartesian3.fromDegrees(107.6457061, -6.8659281, 1050),
+            orientation: { heading: Cesium.Math.toRadians(45), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
             duration: 2
-        });    
+        });      
     } catch (e) { console.error(e); }
 }
 init();
 async function loadHoles() {
     try {
-        const holeResource = await Cesium.IonResource.fromAssetId(4408863);
+        const holeResource = await Cesium.IonResource.fromAssetId(4448773);
         const holeDataSource = await Cesium.GeoJsonDataSource.load(holeResource);
         await viewer.dataSources.add(holeDataSource);
 
@@ -392,111 +392,111 @@ function renderChart(labels, data) {
 // 7. KONTUR & CLEAR
 // VIEWER PER HOLE dan LOAD DATA ASSET KONTUR
 const holeData = {
- "1": {//-6.868553594615521, 107.62457935894973;  4406266
-        center: Cesium.Cartesian3.fromDegrees(107.6245793589, -6.86855359, 1000), // Koordinat Hole 1
-        contourAssetId: 4406266, // ID Asset Kontur Hole 1 di Ion
-        heading: 210, pitch: -35, roll:0 
+ "1": {//-6.867432,107.643656
+        center: Cesium.Cartesian3.fromDegrees(107.643656, -6.867432, 990), // Koordinat Hole 1
+        contourAssetId: 4446667, // ID Asset Kontur Hole 1 di Ion
+        heading: 247, pitch: -40, roll:0 
     },
-    "2": {//-6.8703580,107.6238354 ; 4406267
-        center: Cesium.Cartesian3.fromDegrees(107.6238354, -6.8703580, 1000),
-        contourAssetId: 4406267,
-        heading: 25, pitch: -60, roll:0
-    },
-
-    "3": {//-6.8697840,107.6244687 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6244687, -6.8697840, 950),
-        contourAssetId: 4406268,
-        heading: 200, pitch: -45, roll:0
+    "2": {//-6.869415,107.641957
+        center: Cesium.Cartesian3.fromDegrees(107.641957, -6.869415, 980),
+        contourAssetId: 4446926,
+        heading: 187, pitch: -45, roll:0
     },
 
-    "4": {//-6.8715004,107.6247602 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6247602, -6.8715004, 1050),
-        contourAssetId: 4406269,
-        heading: 180, pitch: -55, roll:0
+    "3": {//-6.8703649,107.6437065 
+        center: Cesium.Cartesian3.fromDegrees(107.6437065, -6.8703649, 1050),
+        contourAssetId: 4446941,
+        heading: 45, pitch: -60, roll:0
     },
 
-    "5": {//-6.8732492,107.6243212 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6243212, -6.8732492, 950),
-        contourAssetId: 4406270,
-        heading: 200, pitch: -45, roll:0
+    "4": {//-6.8699650,107.6448563 
+        center: Cesium.Cartesian3.fromDegrees(107.6448563, -6.8699650, 990),
+        contourAssetId: 4446954,
+        heading: 217, pitch: -60, roll:0
     },
 
-    "6": {//-6.8739832,107.6250553 
-        center: Cesium.Cartesian3.fromDegrees(107.6250553, -6.8739832, 950),
-        contourAssetId: 4406272,
-        heading: 120, pitch: -55, roll:0
+    "5": {//-6.8701316,107.6458811 
+        center: Cesium.Cartesian3.fromDegrees(107.6458811,-6.8701316, 990),
+        contourAssetId: 4446962,
+        heading: 98, pitch: -45, roll:0
     },
 
-    "7": {//-6.8735298,107.62570297 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.62570297, -6.8735298, 950),
-        contourAssetId: 4406273,
-        heading: 270, pitch: -60, roll:0
+    "6": {//-6.8698400,107.6464893 
+        center: Cesium.Cartesian3.fromDegrees(107.6464893, -6.8698400, 990),
+        contourAssetId: 4446964,
+        heading: 300, pitch: -55, roll:0
     },
 
-    "8": {//-6.8716947,107.6251632 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6251632, -6.8716947, 950),
-        contourAssetId: 4406274,
-        heading: 355, pitch: -45, roll:0
+    "7": {//-6.8672737,107.6460561
+        center: Cesium.Cartesian3.fromDegrees(107.6460561, -6.8672737, 1070),
+        contourAssetId: 4446971,
+        heading: 17, pitch: -55, roll:0
     },
 
-    "9": {//-6.8690032,107.6250409 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6250409, -6.8690032, 1050),
-        contourAssetId: 4406275,
-        heading: 19, pitch: -65, roll:0
+    "8": {//-6.8685402,107.6444397 ; 
+        center: Cesium.Cartesian3.fromDegrees(107.6444397, -6.8685402, 1060),
+        contourAssetId: 4446975,
+        heading: 225, pitch: -45, roll:0
     },
 
-    "10": {//-6.8692191,107.6254655 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6254655, -6.8692191, 950),
-        contourAssetId: 4406276,
-        heading: 190, pitch: -50, roll:0
+    "9": {//-6.8678570,107.6445063; 
+        center: Cesium.Cartesian3.fromDegrees(107.6445063, -6.8678570, 1050),
+        contourAssetId: 4446978,
+        heading: 27, pitch: -55, roll:0
     },
 
-    "11": {//-6.8710111,107.6255662 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6255662, -6.8710111, 950),
-        contourAssetId: 4406277,
-        heading: 168, pitch: -55, roll:0
+    "10": {//-6.8642305,107.6502512
+        center: Cesium.Cartesian3.fromDegrees(107.6502512,-6.8642305, 1055),
+        contourAssetId: 4446980,
+        heading: 90, pitch: -50, roll:0
     },
 
-    "12": {//-6.8693631,107.6258397 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6258397, -6.8693631, 980),
-        contourAssetId: 4406278,
-        heading: 3, pitch: -45, roll:0
+    "11": {//-6.8636056,107.6521967
+        center: Cesium.Cartesian3.fromDegrees(107.6521967,-6.8636056, 1050),
+        contourAssetId: 4446987,
+        heading: 60, pitch: -55, roll:0
     },
 
-    "13": {//-6.8693127,107.6262355 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6262355, -6.8693127, 980),
-        contourAssetId: 4406279,
-        heading: 185, pitch: -45, roll:0
+    "12": {//-6.8665780,107.6505303 
+        center: Cesium.Cartesian3.fromDegrees(107.6505303,-6.8665780, 1070),
+        contourAssetId: 4446993,
+        heading: 220, pitch: -45, roll:0
     },
 
-    "14": {//-6.8729829,107.6259116 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6259116, -6.8729829, 940),
-        contourAssetId: 4406280,
-        heading: 150, pitch: -45, roll:0
+    "13": {//-6.8692817,107.6504553 
+        center: Cesium.Cartesian3.fromDegrees(107.6504553, -6.8692817, 1100),
+        contourAssetId: 4446989,
+        heading: 150, pitch: -60, roll:0
     },
 
-    "15": {//-6.8742549,107.6269605 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6269605, -6.8742549, 930),
-        contourAssetId: 4406281,
-        heading: 160, pitch: -78, roll:0
+    "14": {//-6.8691068,107.6492659
+        center: Cesium.Cartesian3.fromDegrees(107.6492659,-6.8691068, 1020),
+        contourAssetId: 4446991,
+        heading: 260, pitch: -50, roll:0
     },
 
-    "16": {//-6.8734561,107.6265773 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6265773, -6.8734561, 950),
-        contourAssetId: 4406282,
-        heading: 10, pitch: -60, roll:0
+    "15": {//-6.8669446,107.6494201
+        center: Cesium.Cartesian3.fromDegrees(107.6494201,-6.8669446, 1100),
+        contourAssetId: 4446990,
+        heading: 45, pitch: -45, roll:0
     },
 
-    "17": {//-6.8712539,107.6268688 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6268688, -6.8712539, 950),
-        contourAssetId: 4406283,
-        heading: 10, pitch: -43, roll:0
+    "16": {//-6.8650002,107.6505345
+        center: Cesium.Cartesian3.fromDegrees(107.6505345,-6.8650002, 1030),
+        contourAssetId: 4446999,
+        heading: 300, pitch: -30, roll:0
     },
 
-    "18": {//-6.8686092,107.6265665 ; 
-        center: Cesium.Cartesian3.fromDegrees(107.6265665, -6.8686092, 1000),
-        contourAssetId: 4406284,
-        heading: 348, pitch: -43, roll:0
+    "17": {//-6.8653907,107.6461665
+        center: Cesium.Cartesian3.fromDegrees(107.6461665,-6.8653907, 1020),
+        contourAssetId: 4447001,
+        heading: 220, pitch: -45, roll:0
+    },
+
+    "18": {//-6.8641993,107.6468163
+        center: Cesium.Cartesian3.fromDegrees(107.6468163,-6.8641993, 1090),
+        contourAssetId: 4447004,
+        heading: 60, pitch: -50, roll:0
     }
 };
 

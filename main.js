@@ -6,7 +6,7 @@ const supabaseUrl = 'https://jltjrfhbreswadzlexzg.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGpyZmhicmVzd2FkemxleHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjA4NjIsImV4cCI6MjA4NTY5Njg2Mn0.mS7QjBoWBS-xYZcAE--SaZHioJ_RqA57l_Bs5p6ppag';
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NmUzZDVlMi1lM2Q3LTQzZDUtODg2Ni0yZTEzZGViODFjYTAiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzA5Nzg4ODV9.bGZbsj_VhF4AviF2Zd6Ohin27yoQ9tthvyWLbUj5fjM"
+Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNGFhYzZhOS0wMzE3LTQzNzYtOGVjYi05ZTA0YzhiMDk5YmQiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzEyODU4MDN9.d2DW9E0jobCU9HtID0mNryFCLknqkA6F9Wp_eLFxViE"
 const viewer = new Cesium.Viewer('cesiumContainer', {
     terrain: Cesium.Terrain.fromWorldTerrain(),
 });
@@ -41,10 +41,9 @@ async function init() {
         viewer.scene.primitives.add(tileset);
         tileset.classificationType = Cesium.ClassificationType.BOTH;
         viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(107.6457061, -6.8659281, 1050),
-            orientation: { heading: Cesium.Math.toRadians(45), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
+        destination: Cesium.Cartesian3.fromDegrees(107.6258056, -6.8698692729, 990),
+            orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-15.0), roll: 0.0 },
             duration: 2
-
         });    
     } catch (e) { console.error(e); }
 }
@@ -500,6 +499,7 @@ const holeData = {
         heading: 60, pitch: -50, roll:0
     }
 };
+
 
 
 document.getElementById('holeSelect').addEventListener('change', async (e) => {
@@ -1205,8 +1205,6 @@ document.getElementById('auth-primary-btn').addEventListener('click', async () =
     }
 });
 
-// 3. Fungsi Cek Akses (Trial 7 Hari / Berbayar)
-// Jalankan pengecekan setiap halaman di-load
 
 // 3. Fungsi Tombol Logout
 document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -1334,67 +1332,72 @@ async function checkAccess() {
         return;
     }
 
-    // 1. Deteksi Lapangan (Merchant) saat ini
+    // 1. DETEKSI MERCHANT ID
     const currentMerchantId = window.location.hostname.includes('mvg') ? 'MVG' : 'TGR';
 
-    // 2. Ambil data profil & data langganan khusus lapangan ini
-    // Kita ambil data dari dua tabel sekaligus
+    // 2. AMBIL DATA PROFIL & SUBSCRIPTION
     const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
     
     const { data: subscription } = await sb.from('subscriptions')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('merchant_id', currentMerchantId)
+        .eq('merchant_id', currentMerchantId) // Mengunci pengecekan hanya untuk lapangan ini
         .eq('status', 'ACTIVE')
         .maybeSingle();
 
     if (!profile) {
-        // ... (Logika pembuatan profil baru Anda tetap sama) ...
-        return; 
+        // ... (Kode insert profil baru tetap di sini) ...
+        return;
     }
 
     currentUser = profile;
-    const nameEl = document.getElementById('display-user-name');
-    if (nameEl) nameEl.textContent = currentUser.full_name;
-
-    // 3. Logika Penentu Akses (Trial vs Subscription)
-    const joinDate = new Date(profile.created_at);
     const today = new Date();
+    const joinDate = new Date(profile.created_at);
     const diffDays = Math.ceil((today - joinDate) / (1000 * 60 * 60 * 24));
     
-    // Cek apakah langganan aktif dan belum expired
+    // 3. LOGIKA PENENTU AKSES
     const isSubActive = subscription && new Date(subscription.valid_until) > today;
     const isTrialValid = diffDays <= 7;
 
-    // KUNCI PINTU: Jika Trial Habis DAN tidak ada langganan aktif di lapangan INI
     if (!isSubActive && !isTrialValid) {
-        console.log(`Akses terkunci untuk lapangan ${currentMerchantId}`);
-        lockUI(session.user.email, currentMerchantId);
+        console.log(`Akses terkunci untuk ${currentMerchantId}.`);
+        // Pastikan nama fungsi di bawah ini sama dengan nama fungsi di bawah (lockUI)
+        lockUI(session.user.email, currentMerchantId); 
     } else {
         console.log("Akses diberikan!");
         overlay.style.display = 'none';
         if (typeof loadTracksFromCloud === "function") loadTracksFromCloud();
-        updateBadge(isSubActive, subscription, diffDays);
+        
+        const badge = document.getElementById('user-status-badge');
+        if (badge) {
+            badge.textContent = isSubActive ? "PRO" : "TRIAL";
+            badge.style.backgroundColor = isSubActive ? "#00ff88" : "#555";
+        }
     }
 }
 
-// Fungsi pembantu agar kode lebih rapi
+// Fungsi pembantu untuk merender tampilan terkunci
 function lockUI(email, merchantId) {
     const overlay = document.getElementById('auth-overlay');
     overlay.style.display = 'flex';
-    document.getElementById('auth-title').textContent = "Akses Terkunci";
-    document.getElementById('auth-subtitle').innerHTML = `Masa trial habis. Silakan aktivasi khusus untuk lapangan <b>${merchantId}</b>`;
     
-    document.getElementById('auth-email').style.display = 'none';
-    document.getElementById('auth-pass').style.display = 'none';
+    const title = document.getElementById('auth-title');
+    const subtitle = document.getElementById('auth-subtitle');
+    if (title) title.textContent = "Akses Terkunci";
+    if (subtitle) subtitle.innerHTML = `Masa trial habis. Silakan aktivasi khusus untuk lapangan <b>${merchantId}</b>`;
+    
+    // Sembunyikan input login agar fokus ke tombol bayar
+    if (document.getElementById('auth-email')) document.getElementById('auth-email').style.display = 'none';
+    if (document.getElementById('auth-pass')) document.getElementById('auth-pass').style.display = 'none';
     
     const btnContainer = document.getElementById('auth-primary-btn').parentElement;
-    btnContainer.innerHTML = '';
+    btnContainer.innerHTML = ''; // Reset container
 
     const btnXendit = document.createElement('button');
     btnXendit.className = "auth-btn";
     btnXendit.style.backgroundColor = "#00ff88";
     btnXendit.style.color = "#000";
+    btnXendit.style.fontWeight = "bold";
     btnXendit.textContent = `Activate ${merchantId} (Instant)`;
     btnXendit.onclick = () => startXenditPayment(currentUser);
     btnContainer.appendChild(btnXendit);
@@ -1449,8 +1452,6 @@ async function startXenditPayment(userProfile) {
         alert("Gagal menghubungi server: " + err.message);
     }
 }
-
-
 
 // akses any device
 async function loadTracksFromCloud() {
@@ -1874,3 +1875,21 @@ function exportGroupPdf() {
 }
 
 //-----------------
+// Mengambil ID Lapangan dari Environment Variable Vercel
+// Gunakan Env Variable Vercel (NEXT_PUBLIC_MERCHANT_ID)
+
+//const MERCHANT_ID = process.env.NEXT_PUBLIC_MERCHANT_ID; 
+async function checkout() {
+  const { data, error } = await supabase.functions.invoke('xendit-payment', {
+    body: { 
+      merchantId: 'TGR', // Contoh: 'TGR'
+      userId: user.id,
+      email: user.email,
+      fullName: user.user_metadata.full_name
+    }
+  });
+
+  if (data?.invoice_url) {
+    window.location.href = data.invoice_url;
+  }
+}

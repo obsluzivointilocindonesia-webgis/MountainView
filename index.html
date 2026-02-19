@@ -98,24 +98,24 @@
     <div id="hole-selector-container"><br><br><br><br><br><br><br><br>
             <select id="holeSelect" class="menu-button-ops">
             <option value="">Hole #</option>
-            <option value="1">Hole 1: 339</option>
-            <option value="2">Hole 2: 446</option>
-            <option value="3">Hole 3: 303</option>
-            <option value="4">Hole 4: 157</option>
-            <option value="5">Hole 5: 306</option>
-            <option value="6">Hole 6: 155</option>
-            <option value="7">Hole 7: 354</option>
-            <option value="8">Hole 8: 478</option>
-            <option value="9">Hole 9: 339</option>
-            <option value="10">Hole 10: 270</option>
-            <option value="11">Hole 11: 151</option>
-            <option value="12">Hole 12: 485</option>
-            <option value="13">Hole 13: 287</option>
-            <option value="14">Hole 14: 166</option>
-            <option value="15">Hole 15: 491</option>
-            <option value="16">Hole 16: 121</option>
-            <option value="17">Hole 17: 418</option>
-            <option value="18">Hole 18: 330</option>
+            <option value="1">Hole 1: 484</option>
+            <option value="2">Hole 2: 154</option>
+            <option value="3">Hole 3: 182</option>
+            <option value="4">Hole 4: 320</option>
+            <option value="5">Hole 5: 274</option>
+            <option value="6">Hole 6: 289</option>
+            <option value="7">Hole 7: 239</option>
+            <option value="8">Hole 8: 295</option>
+            <option value="9">Hole 9: 239</option>
+            <option value="10">Hole 10: 339</option>
+            <option value="11">Hole 11: 156</option>
+            <option value="12">Hole 12: 339</option>
+            <option value="13">Hole 13: 294</option>
+            <option value="14">Hole 14: 384</option>
+            <option value="15">Hole 15: 77</option>
+            <option value="16">Hole 16: 247</option>
+            <option value="17">Hole 17: 302</option>
+            <option value="18">Hole 18: 491</option>
             </select>
     </div>
     <div id="toolbar-info" class="toolbar-info">
@@ -140,7 +140,6 @@
             <button id="newGameBtn" class="menu-button" style="background-color: #0d1b15;">New Round</button>
         </div>
     </div>
-
         
     <div id="score-summary-container" class="summary-card">
         <div>
@@ -190,5 +189,17 @@
 
 </button>
     <script src="main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            // Mendaftarkan file sw yang ada di root
+            navigator.serviceWorker.register('pwabuilder-sw.js')
+            .then(function(registration) {
+                console.log('Service Worker terdaftar dengan sukses:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('Pendaftaran Service Worker gagal:', error);
+            });
+        }
+    </script>
 </body>
 </html>

@@ -77,23 +77,6 @@ body, html, #cesiumContainer {
     z-index: 1009;
 }
 
-/* Container Utama Info Trial */
-#trial-info-text {
-    display: none; /* Akan diubah jadi 'block' via JS */
-    padding: 8px 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1); /* Glassmorphism effect */
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    color: #ffffff;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
 /* Animasi saat muncul */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-5px); }

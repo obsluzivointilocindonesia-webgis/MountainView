@@ -8,6 +8,14 @@ const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
 Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NmUzZDVlMi1lM2Q3LTQzZDUtODg2Ni0yZTEzZGViODFjYTAiLCJpZCI6MzkwMjY2LCJpYXQiOjE3NzA5Nzg4ODV9.bGZbsj_VhF4AviF2Zd6Ohin27yoQ9tthvyWLbUj5fjM"
 const viewer = new Cesium.Viewer('cesiumContainer', {
+    homeButton: false,
+    fullscreenButton: false,
+    baseLayerPicker: false,
+    navigationHelpButton: false,
+    timeline: false,
+    geocoder: false,
+    animation: false,
+    screenModePicker: false,
     terrain: Cesium.Terrain.fromWorldTerrain(),
 });
 viewer.scene.globe.depthTestAgainstTerrain = false;

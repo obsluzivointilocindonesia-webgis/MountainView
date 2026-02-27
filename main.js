@@ -1924,3 +1924,146 @@ async function checkout() {
     window.location.href = data.invoice_url;
   }
 }
+
+//107.6457061, -6.8659281
+//---------------------------------------
+// Fungsi Cuaca sesuai dengan lokasi Lapangan
+const _partA = '3a40adebae12';  //3a40adebae12f302a5a5702582c7d5f2
+const _partB = 'f302a5a5702582';
+const _partC = 'c7d5f2';
+
+async function getRealWeather() {
+    // Tampilkan loading sebentar selagi mengambil data
+    Swal.fire({
+        title: 'Retrieving weather data...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    const apiKey = _partA+_partB+_partC;
+    
+    //  (bisa dinamis sesuai GPS user nantinya)
+    const lat = -6.8659281; 
+    const lon = 107.6457061;
+
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=id`);
+        const data = await response.json();
+
+        if (response.ok) {
+            const windSpeed = (data.wind.speed * 3.6).toFixed(1); // Konversi m/s ke km/jam
+            const windDeg = data.wind.deg; // Arah angin dalam derajat
+            const temp = data.main.temp;
+            const humidity = data.main.humidity;
+            const desc = data.weather[0].description;
+
+            Swal.fire({
+                title: 'Condition of Mountain View Golf Club',
+                html: `
+                    <div style="text-align: left; font-size: 0.9rem;">
+                        <p>🌤️ <b>Condition:</b> ${desc}</p>
+                        <p>🌡️ <b>Temperature:</b> ${temp}°C</p>
+                        <p>🌬️ <b>Wind Speed:</b> ${windSpeed} km/jam</p>
+                        <p>🧭 <b>Wind Direction:</b> ${windDeg}° (from North)</p>
+                        <p>💧 <b>Humidity:</b> ${humidity}%</p>
+                        <hr>
+                        <small style="color: #666;">*Data update otomatis via OpenWeather</small>
+                    </div>
+                `,
+                icon: 'success',
+                confirmButtonColor: '#27ae60'
+            });
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        Swal.fire('Gagal', 'Tidak dapat mengambil data cuaca: ' + error.message, 'error');
+    }
+}
+
+//----------------------compas
+//
+let compassActive = false;
+
+function toggleCompass() {
+    if (!compassActive) {
+        startCompass();
+        compassActive = true;
+        document.getElementById('compassBtn').style.borderColor = '#00ff88';
+    } else {
+        stopCompass();
+        compassActive = false;
+        document.getElementById('compassBtn').style.borderColor = '#444';
+        document.getElementById('compassIcon').style.transform = 'rotate(0deg)';
+        document.getElementById('directionText').innerText = 'N';
+    }
+}
+
+function startCompass() {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // KHUSUS iOS
+        DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation, true);
+                } else {
+                    Swal.fire("Izin Ditolak", "Akses sensor arah dibutuhkan untuk kompas.", "warning");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire("Error", "Sensor tidak didukung di perangkat ini.", "error");
+            });
+    } else {
+        // ANDROID & LAINNYA
+        // Gunakan 'deviceorientationabsolute' jika tersedia untuk akurasi magnetik
+        if ('ondeviceorientationabsolute' in window) {
+            window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+        } else {
+            window.addEventListener('deviceorientation', handleOrientation, true);
+        }
+    }
+}
+
+function handleOrientation(event) {
+    let heading = null;
+
+    // 1. Coba deteksi standar iOS
+    if (event.webkitCompassHeading) {
+        heading = event.webkitCompassHeading;
+    } 
+    // 2. Coba deteksi standar Android (Absolute)
+    else if (event.absolute === true && event.alpha !== null) {
+        heading = 360 - event.alpha;
+    }
+    // 3. Fallback jika alpha tersedia tapi tidak absolute
+    else if (event.alpha !== null) {
+        heading = 360 - event.alpha;
+    }
+
+    if (heading !== null) {
+        const icon = document.getElementById('compassIcon');
+        const text = document.getElementById('directionText');
+        
+        // Membulatkan angka untuk performa lebih ringan
+        const roundedHeading = Math.round(heading);
+        
+        // Putar ikon
+        icon.style.transform = `rotate(${-roundedHeading}deg)`;
+
+        // Update teks arah
+        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        const index = Math.round(roundedHeading / 45) % 8;
+        text.innerText = directions[index];
+        
+        // DEBUG: Hapus baris ini jika sudah jalan
+        console.log("Heading:", roundedHeading);
+    }
+}
+
+function stopCompass() {
+    window.removeEventListener('deviceorientation', handleOrientation);
+    window.removeEventListener('deviceorientationabsolute', handleOrientation);
+}
+
+//-------------end compas ----------------------------

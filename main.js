@@ -1754,7 +1754,6 @@ async function showHistoryRounds() {
 }
 
 // Hubungkan tombol utama ke fungsi modal
-//document.getElementById('btnHistoryRounds').addEventListener('click', showHistoryRounds);
 
 // Menangani klik pada tombol cetak di dalam modal (Event Delegation)
 document.addEventListener('click', function (e) {
@@ -2240,30 +2239,29 @@ function activateListeners() {
 }
 
 function handleOrientation(event) {
-    let heading = 0;
+    let heading;
 
-    // Cek data dari iOS
-    if (event.webkitCompassHeading) {
-        heading = event.webkitCompassHeading;
-    } 
-    // Cek data dari Android (alpha adalah rotasi z-axis)
-    else if (event.alpha !== null) {
-        // Untuk Android, alpha biasanya dimulai dari 0 saat aplikasi dibuka.
-        // Jika event.absolute true, maka 0 adalah Utara sejati.
-        heading = 360 - event.alpha;
+    if (event.webkitCompassHeading !== undefined) {
+        heading = event.webkitCompassHeading; // iOS
+    } else if (event.alpha !== null) {
+        if (event.absolute === true) {
+            heading = 360 - event.alpha; // Android absolute
+        } else {
+            heading = 360 - event.alpha; // fallback
+        }
     }
 
-    if (heading !== 0) {
+    if (heading != null && !isNaN(heading)) {
         const icon = document.getElementById('compassIcon');
         const text = document.getElementById('directionText');
-        
-        // Update rotasi ikon
+
         icon.style.transform = `rotate(${-heading}deg)`;
 
-        // Update teks label
-        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        const directions = ['N','NE','E','SE','S','SW','W','NW'];
         const index = Math.round(heading / 45) % 8;
         text.innerText = directions[index];
+
+        console.log("Heading:", heading);
     }
 }
 

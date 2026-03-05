@@ -1,0 +1,21 @@
+{
+  "name": "TerraGOLF",
+  "short_name": "TerraGOLF Mountain View",
+  "description": "TerraGOLF: 3D Realistic GOLF Tracker, Plan, Play and Record your game in realistic way",
+  "dir": "ltr",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#254126",
+  "id": "com.TerraGOLF.app",
+  "icons": [
+    {
+      "src": "LOGO TERRAGOLF.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
